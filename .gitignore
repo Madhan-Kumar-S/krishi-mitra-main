@@ -38,6 +38,7 @@ ENV/
 *.json
 !package.json
 !package-lock.json
+!backend/railway.json
 
 # Large data files
 chroma_data/
