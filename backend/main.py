@@ -8,14 +8,6 @@ import logging
 from typing import Optional
 from dotenv import load_dotenv
 
-# Get the absolute path to the backend directory
-BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
-# Add the backend directory to the Python path
-sys.path.append(BACKEND_DIR)
-
-# Load environment variables
-load_dotenv()
-
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -141,3 +133,4 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     host = os.getenv("HOST", "0.0.0.0")
     uvicorn.run(app, host=host, port=port) 
+
