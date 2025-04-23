@@ -41,23 +41,27 @@ def setup_google_credentials():
 # Setup Google credentials
 setup_google_credentials()
 
-# Import config
+# Import config using relative import
 try:
-    from configs.config import set_envs
+    from .configs.config import set_envs
     set_envs()
 except ImportError as e:
     logger.error(f"Failed to import config: {e}")
-    # Try to add the parent directory to the path
     try:
-        sys.path.append(os.path.dirname(BACKEND_DIR))
+        # Alternative import approach
         from configs.config import set_envs
         set_envs()
     except ImportError as e:
-        logger.error(f"Failed to import config from alternative path: {e}")
-        raise
+        logger.error(f"Failed to import config using alternative approach: {e}")
+        # Continue without config - handle missing functionality gracefully
+        logger.warning("Continuing without config module")
 
 # Now import the app components that need the credentials
-from app import llm_svc, chroma, json_chain
+try:
+    from .app import llm_svc, chroma, json_chain
+except ImportError as e:
+    logger.error(f"Failed to import app components: {e}")
+    raise
 
 app = FastAPI(title="KrishiMitra API")
 
