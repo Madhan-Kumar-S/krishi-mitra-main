@@ -11,11 +11,6 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Get the absolute path to the project root directory
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Add the root directory to the Python path
-sys.path.append(ROOT_DIR)
-
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -27,7 +22,7 @@ def setup_google_credentials():
         try:
             # If it's a JSON string, parse it and write to a temporary file
             creds = json.loads(creds_str)
-            temp_creds_path = os.path.join(ROOT_DIR, 'temp_creds.json')
+            temp_creds_path = os.path.join(os.path.dirname(__file__), 'temp_creds.json')
             with open(temp_creds_path, 'w') as f:
                 json.dump(creds, f)
             os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = temp_creds_path
@@ -41,20 +36,13 @@ def setup_google_credentials():
 # Setup Google credentials
 setup_google_credentials()
 
-# Import config first to set up credentials
+# Import config
 try:
-    import configs.config as config
-    config.set_envs()
+    from configs.config import set_envs
+    set_envs()
 except ImportError as e:
     logger.error(f"Failed to import config: {e}")
-    # Try alternative path
-    try:
-        sys.path.append(os.path.join(ROOT_DIR, '..'))
-        import configs.config as config
-        config.set_envs()
-    except ImportError as e:
-        logger.error(f"Failed to import config from alternative path: {e}")
-        raise
+    raise
 
 # Now import the app components that need the credentials
 from app import llm_svc, chroma, json_chain
